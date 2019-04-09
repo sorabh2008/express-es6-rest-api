@@ -6,11 +6,15 @@ import bodyParser from 'body-parser';
 import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
+import books from './books';
 import config from './config.json';
 
 let app = express();
 app.server = http.createServer(app);
 
+app.set('port', process.env.PORT || config.port);
+
+// app.use(express.favicon());
 // logger
 app.use(morgan('dev'));
 
@@ -32,8 +36,9 @@ initializeDb( db => {
 
 	// api router
 	app.use('/api', api({ config, db }));
+	app.use('/books', books({ config, db }));
 
-	app.server.listen(process.env.PORT || config.port, () => {
+	app.server.listen(app.get('port'), () => {
 		console.log(`Started on port ${app.server.address().port}`);
 	});
 });
